@@ -1,0 +1,699 @@
+openapi: 3.0.0
+info:
+  title: paysage API
+  version: '1.0'
+  license:
+    name: Licence MIT
+    url: 'https://github.com/dataesr/paysage/LICENCE.md'
+  description: All endpoints for the paysage app.
+servers:
+  - url: 'http://localhost:3000'
+    description: development
+  - url: 'https://api.paysage.staging.dataesr.ovh'
+    description: staging
+  - url: 'https://api;paysage.dataesr.ovh'
+    description: production
+paths:
+  /structures:
+    get:
+      summary: Your GET endpoint
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Structure'
+        '500':
+          description: Internal Server Error
+      operationId: getStructuresList
+      description: Get a list of structures
+      parameters:
+        - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/projection'
+      tags:
+        - Structures
+    post:
+      summary: ''
+      operationId: CreateStructure
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      description: Create a new structure
+      tags:
+        - Structures
+    parameters: []
+  '/structures/{structureId}':
+    parameters:
+      - schema:
+          type: string
+        name: structureId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Structures
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StructureFull'
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: ETag checksum
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: getOneStructure
+      description: Retrieve the information of the structure with the matching structure ID.
+      security:
+        - Bearer JWT: []
+      parameters: []
+    patch:
+      summary: ''
+      operationId: findAndModifyOneStructure
+      responses:
+        '200':
+          description: OK
+          headers:
+            Location:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '412':
+          description: Precondition Failed
+        '500':
+          description: Internal Server Error
+      description: Modify a structure
+      security:
+        - Bearer JWT: []
+      tags:
+        - Structures
+    delete:
+      summary: ''
+      operationId: deleteOneStructure
+      description: Delete a structure
+      security:
+        - Bearer JWT: []
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      tags:
+        - Structures
+  '/structures/{structureId}/identifiers':
+    parameters:
+      - schema:
+          type: string
+        name: structureId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Structures
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Identifier'
+      operationId: getStructureIdentifiers
+      description: Get all identifiers associated with a structure.
+      security:
+        - Bearer JWT: []
+    post:
+      summary: ''
+      operationId: createNewStructureIdentifier
+      responses:
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+          headers:
+            Location:
+              schema:
+                type: string
+        '500':
+          description: Internal Server Error
+      description: Add an identifier to the structure
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Identifier'
+      tags:
+        - Structures
+  '/structures/{structureID}/weblinks':
+    parameters:
+      - schema:
+          type: string
+        name: structureID
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Structures
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WebLink'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      operationId: getStructureWeblinks
+      description: Get all links related to a structure
+      security:
+        - Bearer JWT: []
+    post:
+      summary: ''
+      operationId: createStructureWebLink
+      responses:
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebLink'
+      description: Add a new weblink to a structure.
+      tags:
+        - Structures
+  '/structures/{structureId}/addresses':
+    parameters:
+      - schema:
+          type: string
+        name: structureId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Structures
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Address'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      operationId: getStructureAddresses
+      description: Get all addresses related to a structure
+      security:
+        - Bearer JWT: []
+    post:
+      summary: ''
+      operationId: createStructureAddress
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      description: Add an address to a structure
+      security:
+        - Bearer JWT: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+        description: ''
+      tags:
+        - Structures
+  '/structures/{structureId}/socialmedias':
+    parameters:
+      - schema:
+          type: string
+        name: structureId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Structures
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SocialMedia'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      operationId: getStructureSocialMedia
+      security:
+        - Bearer JWT: []
+      description: Get all socialMedias related to a structure.
+    post:
+      summary: ''
+      operationId: createStructureSocialMedia
+      responses:
+        '200':
+          description: OK
+      description: Add a socialMedia to a structure
+      security:
+        - Bearer JWT: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SocialMedia'
+      tags:
+        - Structures
+  '/structures/{structureId}/categories':
+    parameters:
+      - schema:
+          type: string
+        name: structureId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Structures
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryEdge'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      operationId: getStructureCategories
+      description: Get all categories related to a structure.
+      security:
+        - Bearer JWT: []
+    post:
+      summary: ''
+      operationId: AddStructureCategory
+      responses:
+        '200':
+          description: OK
+      description: Adds a new category to a structure.
+      security:
+        - Bearer JWT: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryEdge'
+      tags:
+        - Structures
+components:
+  schemas:
+    User:
+      type: object
+      title: User
+      description: ''
+      x-examples:
+        Alice Smith:
+          id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the given user.
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - id
+        - fullName
+        - email
+      readOnly: true
+    Structure:
+      title: Structure
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        acronym:
+          type: string
+        logo:
+          type: string
+          format: uri
+        lastUpdate:
+          type: string
+          readOnly: true
+        creationDate:
+          type: string
+          readOnly: true
+        legalCategory:
+          type: string
+        isPublicResearch:
+          type: boolean
+        isActive:
+          type: boolean
+        originatedFrom:
+          type: string
+          enum:
+            - Fusion
+            - Regroupement
+            - ...
+      x-examples:
+        example-1:
+          id: string
+          name: string
+          acronym: string
+          logo: 'http://example.com'
+          lastUpdate: string
+          creationDate: string
+          legalCategory: string
+          isPublicResearch: true
+          isActive: true
+          originatedFrom: Fusion
+    Price:
+      title: Prices
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        name_en:
+          type: string
+        organizer:
+          $ref: '#/components/schemas/Structure'
+        website:
+          type: string
+        wikipedia:
+          type: string
+        socialNetworks:
+          type: string
+        categories:
+          type: string
+        laureates:
+          type: array
+          items:
+            type: string
+        identifiers:
+          type: string
+    Category:
+      type: object
+      title: Category
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      readOnly: true
+    Person:
+      title: Person
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        identifiers:
+          type: array
+          items: {}
+        gender:
+          type: string
+          enum:
+            - F
+            - M
+        activity:
+          type: string
+    WebLink:
+      title: WebLinks
+      type: object
+      properties:
+        link:
+          type: string
+        language:
+          type: string
+        type:
+          type: string
+      required:
+        - link
+        - type
+    Identifier:
+      title: Identifier
+      type: object
+      properties:
+        identifier:
+          type: string
+        type:
+          type: string
+      required:
+        - identifier
+        - type
+    Address:
+      description: ''
+      type: object
+      properties:
+        main:
+          type: boolean
+        address:
+          type: string
+        gps:
+          type: object
+          required:
+            - lat
+            - lon
+          properties:
+            lat:
+              type: number
+            lon:
+              type: number
+        postcode:
+          type: string
+        city:
+          type: string
+        citycode:
+          type: string
+        urbanUnitCode:
+          type: string
+        urbanUnitLabel:
+          type: string
+        country:
+          type: string
+        provider:
+          type: string
+        score:
+          type: number
+      required:
+        - main
+        - address
+        - gps
+        - postcode
+        - city
+        - citycode
+        - urbanUnitCode
+        - urbanUnitLabel
+        - country
+        - provider
+        - score
+    SocialMedia:
+      title: SocialMedia
+      type: object
+      properties:
+        type:
+          type: string
+        url:
+          type: string
+      required:
+        - type
+        - url
+    Contact:
+      title: Contact
+      type: object
+      properties:
+        email:
+          type: string
+        type:
+          type: string
+    CategoryEdge:
+      title: CategoryEdge
+      type: object
+      properties:
+        categoryId:
+          type: string
+          writeOnly: true
+        since:
+          type: string
+        url:
+          type: string
+        category:
+          $ref: '#/components/schemas/Category'
+    StructureFull:
+      type: object
+      description: ''
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        acronym:
+          type: string
+        logo:
+          type: string
+        lastUpdate:
+          type: string
+        creationDate:
+          type: string
+        legalCategory:
+          type: string
+        isPublicResearch:
+          type: boolean
+        isActive:
+          type: boolean
+        originatedFrom:
+          type: string
+        socialMedias:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialMedia'
+        identifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebLink'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+      readOnly: true
+  securitySchemes:
+    Bearer JWT:
+      type: http
+      scheme: bearer
+      description: ''
+  parameters:
+    query:
+      name: query
+      in: query
+      required: false
+      schema:
+        type: string
+    offset:
+      name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int64
+        default: 20
+        minimum: 1
+        maximum: 100
+    projection:
+      name: projection
+      in: query
+      required: false
+      schema:
+        type: string
+      description: hashed projection object
+tags:
+  - name: Structures
